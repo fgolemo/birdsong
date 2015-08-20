@@ -3,6 +3,11 @@ import cPickle as pickle
 
 __author__ = 'Florian'
 
+# This script scans the directory provided (see below) for folders with birds,
+# subfolders with days and files within those day folders.
+# The resulting list is written to a CSV fie and the list is stored as pickle
+
+
 dataFolder = "D:/birddata"
 outputSongsPerDay = []
 
