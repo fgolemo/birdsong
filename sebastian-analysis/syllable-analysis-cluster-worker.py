@@ -6,6 +6,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import sys
+import os
 from scipy import fft, ifft
 from scikits.audiolab import wavread, Format, Sndfile
 
@@ -15,18 +16,19 @@ amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be 
 freq_threshold = 8  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
 smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
 zero_val = 1.23e-12  # the value that wave data gets set to if it's not a syllable
+birdDataDir = "~/birddata/"
+outDir = "~/syllables"
 
 if smoothing <= 1:
     quit("smoothing has to be >1")
 
-# if len(sys.argv) == 2:
-#    inFile = sys.argv[1]
-# else:
-#    if len(sys.argv) > 2:
-#        quit("only one optional argument: path to wav file that is to be analyzed")
-#    else:
-#        inFile = 'b1136.d94.t282148.wav'
-inFile = 'b1136.d94.t282148.wav'
+outDir = os.path.expanduser(outDir)
+
+if not os.path.exists(outDir):
+    os.makedirs(outDir)
+
+inData = sys.argv[1].split(",")  # [0] = #bird, [1] = day, [2] = hour, [3] = min, [4] = sec, [5] = filename
+inFile = os.path.expanduser(birdDataDir) + inData[0] + '/' + inData[1] + '/' + inData[5]
 
 data, sample_freq, encoding = wavread(inFile)
 
@@ -92,11 +94,13 @@ class AudioWriter:
     f = None
     filecount = 0
 
-    def __init__(self, run):
-        self.run = run
+    def __init__(self, outDir, inData):
+        self.outDir = outDir
+        self.inData = inData
 
     def open(self):
-        self.f = Sndfile(self.baseFilename + "." + str(self.run) + "." + str(self.syllableIndex) + '.flac', 'w',
+        filename = inData[0] + "-" + inData[1] + "-" + inData[2] + "-" + inData[3] + "-" + inData[4]
+        self.f = Sndfile(self.outDir + filename + ".syllable-" + str(self.syllableIndex) + '.flac', 'w',
                          self.format, 1, 44100)
         self.fileOpen = True
 
@@ -125,9 +129,7 @@ class AudioWriter:
                 # print self.filecount
 
 
-run = sys.argv[1]
-
-aud = AudioWriter(run)
+aud = AudioWriter(outDir, inData)
 aud.parseData(dataMod)
 
 # plt.show()

@@ -14,7 +14,7 @@ cd $HOME/birdsong
 nb_concurrent_processes=16
 j=0
 while read line; do
-    python syllable-analysis-cluster-test.py ${line} &
+    python syllable-analysis-cluster-worker.py ${line} &
     ((++j == nb_concurrent_processes)) && { j=0; wait; }
 done < ${pool}
 
