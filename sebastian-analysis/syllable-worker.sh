@@ -9,7 +9,7 @@
 export PATH=$PATH:$HOME/libsndfile/bin/
 export PYTHONPATH=$PYTHONPATH:$HOME/pylib/lib/python2.7/site-packages/
 
-cd $HOME/birdsong
+cd $HOME/birdsong/sebastian-analysis
 
 nb_concurrent_processes=16
 j=0
