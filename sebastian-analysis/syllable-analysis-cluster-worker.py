@@ -17,7 +17,7 @@ freq_threshold = 8  # if the number of good freqs (see prev line) is higher than
 smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
 zero_val = 1.23e-12  # the value that wave data gets set to if it's not a syllable
 birdDataDir = "~/birddata/"
-outDir = "~/syllables"
+outDir = "~/syllables/"
 
 if smoothing <= 1:
     quit("smoothing has to be >1")
