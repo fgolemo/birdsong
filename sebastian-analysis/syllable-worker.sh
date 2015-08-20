@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -N test_job2
-#PBS -o test_job.out
-#PBS -b test_job.err
+#PBS -N birdsong_job
+#PBS -o birdsong_job.out
+#PBS -b birdsong_job.err
 #PBS -m abe
 #PBS -M fgolemo@gmail.com
 #PBS -l walltime=00:59:59

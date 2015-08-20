@@ -2,3 +2,5 @@
 **/*.png
 .idea
 sebastian-analysis/pool/*
+sebastian-analysis/log/*
+**/birdsong_job*
