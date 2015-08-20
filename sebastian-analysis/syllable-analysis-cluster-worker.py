@@ -100,7 +100,7 @@ class AudioWriter:
 
     def open(self):
         filename = inData[0] + "-" + inData[1] + "-" + inData[2] + "-" + inData[3] + "-" + inData[4]
-        self.f = Sndfile(self.outDir + filename + ".syllable-" + str(self.syllableIndex) + '.flac', 'w',
+        self.f = Sndfile(self.outDir + "/" + filename + ".syllable-" + str(self.syllableIndex) + '.flac', 'w',
                          self.format, 1, 44100)
         self.fileOpen = True
 
