@@ -4,7 +4,7 @@ import librosa
 
 # 1. Get the file path to the included audio example
 # filename = librosa.util.example_audio_file()
-filename = "C:/Users/Florian/Music/Kevin MacLeod - Jazz Sampler/Kevin MacLeod - Jazz Sampler - 00 - Vibe Ace.flac"
+filename = "./testsong-featureextraction-jazz.flac"
 print(filename)
 
 # 2. Load the audio as a waveform `y`
