@@ -20,14 +20,16 @@ print("converting now")
 counter = 0
 for match in matches:
     outName = match[:-3]+"flac"
-    if os.path.isfile(outName):
-        continue
-    app = pysox.CSoxApp(match, outName)
-    app.flow()
     counter += 1
     percentDone = float(counter) / nMatches * 100
-    # if percentDone % 10 == 0:
-    #     print ("/n"+str(percentDone) + "% done")
     print("{:.2f}% done".format(percentDone), end='\r')
+    if os.path.isfile(outName):
+        continue
+    try:
+        app = pysox.CSoxApp(match, outName)
+        app.flow()
+    except IOError:
+        print ("\nIOError at file: "+match+". Skipping")
+
 print("\nconversion done")
 
