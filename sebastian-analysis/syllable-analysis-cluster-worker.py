@@ -9,13 +9,12 @@ import sys
 import os
 from scipy import fft, ifft
 from scikits.audiolab import wavread, Format, Sndfile
+from parameters import parameters
 
 __author__ = 'Florian'
 
-amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be counted as good
-freq_threshold = 8  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
-zero_val = 1.23e-12  # the value that wave data gets set to if it's not a syllable
+zero_val = parameters['zero_val']  # the value that wave data gets set to if it's not a syllable
+
 birdDataDir = "~/birddata/"
 outDir = "~/syllables/"
 
@@ -29,6 +28,13 @@ if not os.path.exists(outDir):
 
 inData = sys.argv[1].split(",")  # [0] = #bird, [1] = day, [2] = hour, [3] = min, [4] = sec, [5] = filename
 inFile = os.path.expanduser(birdDataDir) + inData[0] + '/' + inData[1] + '/' + inData[5]
+
+pBird = str(inData[0])
+pType = 'syllable' # ['motif'|'syllable]
+
+amp_threshold = parameters[pBird][pType][0]
+freq_threshold = parameters[pBird][pType][1]
+smoothing = parameters[pBird][pType][2]
 
 data, sample_freq, encoding = wavread(inFile)
 
