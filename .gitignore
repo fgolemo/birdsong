@@ -6,3 +6,4 @@ sebastian-analysis/log/*
 **/birdsong_job*
 *.pickle
 *.csv
+*.pyc
