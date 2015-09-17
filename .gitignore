@@ -1,4 +1,4 @@
-**/*.flac
+**/syll*.flac
 **/*.png
 .idea
 sebastian-analysis/pool/*
