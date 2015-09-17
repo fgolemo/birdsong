@@ -3,4 +3,5 @@
 .idea
 sebastian-analysis/pool/*
 sebastian-analysis/log/*
+**/test_job*
 **/birdsong_job*
