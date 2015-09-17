@@ -1,6 +1,7 @@
 import os
 import cPickle as pickle
 import subprocess
+import sys
 
 __author__ = 'Florian'
 
@@ -8,14 +9,20 @@ jobsPerWorker = 5
 
 # This script takes the list from step one and for each N lines it submits a job to the cluster
 
+bird = 112
+if len(sys.argv) == 2:
+    bird = int(sys.argv[1])
+
 for folder in ["./pool", "./logs"]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
 songsPerDay = pickle.load(open('todo-cluster.pickle', "rb"))
+todos = songsPerDay[str(bird)]
 
-workers = [songsPerDay[x:x + jobsPerWorker] for x in range(0, len(songsPerDay), jobsPerWorker)]
-
+workers = [todos[x:x + jobsPerWorker] for x in range(0, len(todos), jobsPerWorker)]
+print workers
+quit()
 i = 1
 for worker in workers:
     poolfile = './pool/worker-' + str(i) + '.txt'
