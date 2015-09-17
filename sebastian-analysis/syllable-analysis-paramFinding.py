@@ -5,33 +5,48 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import sys
 from scipy import fft, ifft
-from scikits.audiolab import wavread, Format, Sndfile
+from scikits.audiolab import flacread, Format, Sndfile
 
 __author__ = 'Florian'
 
 zero_val = 1.23e-12  # the value that wave data gets set to if it's not a syllable
 
-# Params for bird 1136
+# Params for bird 112 - whole motif
+# amp_threshold = 1.5e-08  # if the amp of any freq is higher than this, it will be counted as good
+# freq_threshold = 9  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+# smoothing = 5  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# Params for bird 112 - single syllables
+# amp_threshold = 1.5e-08  # if the amp of any freq is higher than this, it will be counted as good
+# freq_threshold = 5  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+# smoothing = 3  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+
+# Params for bird 1136 - whole motif
 # amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be counted as good
 # freq_threshold = 8  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
 # smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
-
-# Params for bird 1592
-amp_threshold = 4.1e-08  # if the amp of any freq is higher than this, it will be counted as good
-freq_threshold = 2  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
-
-
-# Params for bird 112
+# Params for bird 1136 - single syllables
 # amp_threshold = 1e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 8  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 5  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# freq_threshold = 4  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+# smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
 
-
-# Params for bird 1233
+# Params for bird 1233 - whole motif
 # amp_threshold = 1e-08  # if the amp of any freq is higher than this, it will be counted as good
 # freq_threshold = 7  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
 # smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# Params for bird 1233 - single syllables
+# amp_threshold = 7e-09  # if the amp of any freq is higher than this, it will be counted as good
+# freq_threshold = 3  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+# smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+
+# Params for bird 1592 - whole motif
+# amp_threshold = 4.1e-08  # if the amp of any freq is higher than this, it will be counted as good
+# freq_threshold = 2  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+# smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# Params for bird 1592 - single syllables
+amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be counted as good
+freq_threshold = 5  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+smoothing = 2  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+
 
 
 if smoothing <= 1:
@@ -43,10 +58,16 @@ else:
     if len(sys.argv) > 2:
         quit("only one optional argument: path to wav file that is to be analyzed")
     else:
-        # inFile = 'b1136.d94.t282148.wav'
-        inFile = 'b1592.d54.t66047281.wav'
+        # inFile = 'audio-samples/b112.d54.t481481.flac'
+        # inFile = 'audio-samples/b112.d92.t5639583333.flac'
+        # inFile = 'audio-samples/b1136.d94.t282148.flac'
+        # inFile = 'audio-samples/b1136.d94.t24981322.flac'
+        # inFile = 'audio-samples/b1233.d48.t4839703.flac'
+        # inFile = 'audio-samples/b1233.d92.t44511791.flac'
+        # inFile = 'audio-samples/b1592.d54.t66047281.flac'
+        inFile = 'audio-samples/b1592.d91.t65217093.flac'
 
-data, sample_freq, encoding = wavread(inFile)
+data, sample_freq, encoding = flacread(inFile)
 
 timeArray = np.arange(0.0, len(data), 1)
 timeArray = timeArray / sample_freq
@@ -139,7 +160,7 @@ class AudioWriter:
                 # print self.filecount
 
 
-aud = AudioWriter()
-aud.parseData(dataMod)
+# aud = AudioWriter()
+# aud.parseData(dataMod)
 
 plt.show()
