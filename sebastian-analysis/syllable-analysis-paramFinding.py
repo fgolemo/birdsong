@@ -6,46 +6,55 @@ import matplotlib.pyplot as plt
 import sys
 from scipy import fft, ifft
 from scikits.audiolab import flacread, Format, Sndfile
+from parameters import parameters
 
 __author__ = 'Florian'
 
-zero_val = 1.23e-12  # the value that wave data gets set to if it's not a syllable
+zero_val = parameters['zero_val']  # the value that wave data gets set to if it's not a syllable
 
 # Params for bird 112 - whole motif
-# amp_threshold = 1.5e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 9  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 5  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1.5e-08
+# freq_threshold = 9
+# smoothing = 5
 # Params for bird 112 - single syllables
-# amp_threshold = 1.5e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 5  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 3  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1.5e-08
+# freq_threshold = 5
+# smoothing = 3
 
 # Params for bird 1136 - whole motif
-# amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 8  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1e-09
+# freq_threshold = 8
+# smoothing = 12
 # Params for bird 1136 - single syllables
-# amp_threshold = 1e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 4  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1e-08
+# freq_threshold = 4
+# smoothing = 4
 
 # Params for bird 1233 - whole motif
-# amp_threshold = 1e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 7  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1e-08
+# freq_threshold = 7
+# smoothing = 4
 # Params for bird 1233 - single syllables
-# amp_threshold = 7e-09  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 3  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 4  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 7e-09
+# freq_threshold = 3
+# smoothing = 4
 
 # Params for bird 1592 - whole motif
-# amp_threshold = 4.1e-08  # if the amp of any freq is higher than this, it will be counted as good
-# freq_threshold = 2  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-# smoothing = 12  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 4.1e-08
+# freq_threshold = 2
+# smoothing = 12
 # Params for bird 1592 - single syllables
-amp_threshold = 1e-09  # if the amp of any freq is higher than this, it will be counted as good
-freq_threshold = 5  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
-smoothing = 2  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+# amp_threshold = 1e-09
+# freq_threshold = 5
+# smoothing = 2
+
+
+pBird = '1592' # bird number as string
+pType = 'syllable' # ['motif'|'syllable]
+
+amp_threshold = parameters[pBird][pType][0]  # if the amp of any freq is higher than this, it will be counted as good
+freq_threshold = parameters[pBird][pType][1]  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+smoothing = parameters[pBird][pType][2]  # HAS TO BE >1, also keep the bins N to the left and right of good segments
 
 
 

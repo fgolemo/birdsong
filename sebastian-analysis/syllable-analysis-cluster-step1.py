@@ -1,5 +1,6 @@
 import os
 import cPickle as pickle
+import sys
 
 __author__ = 'Florian'
 
@@ -9,7 +10,9 @@ __author__ = 'Florian'
 
 
 dataFolder = "D:/birddata"
-outputSongsPerDay = []
+if len(sys.argv) == 2:
+    dataFolder = os.path.expanduser(sys.argv[1])
+outputSongsPerDay = {}
 
 print "scanning directory: " + dataFolder
 dirContent = os.listdir(dataFolder)
@@ -22,6 +25,7 @@ for bird in dirContent:
         continue
     birdContent = os.listdir(birdFolder)
     print "checking bird ", bird
+    outputSongsPerDay[bird] = []
     for day in birdContent:
         dayFolder = birdFolder + os.path.sep + day
         try:
@@ -39,12 +43,13 @@ for bird in dirContent:
                 second = nameSegmentsB[5]
             except IndexError:
                 continue
-            outputSongsPerDay.append([bird, day, hour, minute, second, song])
+            outputSongsPerDay[bird].append([bird, day, hour, minute, second, song])
 
 print "directory scan done... writing csv"
-with open('todo-cluster.csv', 'w') as outfile:
-    for line in outputSongsPerDay:
-        outfile.write(",".join(line) + '\n')
+for bird in outputSongsPerDay:
+    with open('todo-cluster-'+bird+'.csv', 'w') as outfile:
+        for line in outputSongsPerDay[bird]:
+            outfile.write(",".join(line) + '\n')
 
 print "writing csv done... writing saving pickle"
 with open('todo-cluster.pickle', 'wb') as outfile:
