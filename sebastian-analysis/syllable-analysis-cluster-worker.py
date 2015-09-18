@@ -8,18 +8,15 @@ import matplotlib.pyplot as plt
 import sys
 import os
 from scipy import fft, ifft
-from scikits.audiolab import wavread, Format, Sndfile
+from scikits.audiolab import flacread, Format, Sndfile
 from parameters import parameters
 
 __author__ = 'Florian'
 
 zero_val = parameters['zero_val']  # the value that wave data gets set to if it's not a syllable
 
-birdDataDir = "~/birddata/"
-outDir = "~/syllables/"
-
-if smoothing <= 1:
-    quit("smoothing has to be >1")
+birdDataDir = "/argile/golemo/birddata-flac/"
+outDir = "/argile/golemo/birddata-syllables/"
 
 outDir = os.path.expanduser(outDir)
 
@@ -36,7 +33,7 @@ amp_threshold = parameters[pBird][pType][0]
 freq_threshold = parameters[pBird][pType][1]
 smoothing = parameters[pBird][pType][2]
 
-data, sample_freq, encoding = wavread(inFile)
+data, sample_freq, encoding = flacread(inFile)
 
 timeArray = np.arange(0.0, len(data), 1)
 timeArray = timeArray / sample_freq

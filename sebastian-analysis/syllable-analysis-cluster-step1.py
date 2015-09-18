@@ -8,6 +8,7 @@ __author__ = 'Florian'
 # subfolders with days and files within those day folders.
 # The resulting list is written to a CSV fie and the list is stored as pickle
 
+os.chdir(os.path.dirname(sys.argv[0]))
 
 dataFolder = "D:/birddata"
 if len(sys.argv) == 2:
