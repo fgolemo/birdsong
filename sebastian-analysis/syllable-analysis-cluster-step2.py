@@ -5,7 +5,9 @@ import sys
 
 __author__ = 'Florian'
 
-jobsPerWorker = 5
+jobsPerWorker = 50
+
+os.chdir(os.path.dirname(sys.argv[0]))
 
 # This script takes the list from step one and for each N lines it submits a job to the cluster
 
@@ -21,9 +23,13 @@ songsPerDay = pickle.load(open('todo-cluster.pickle', "rb"))
 todos = songsPerDay[str(bird)]
 
 workers = [todos[x:x + jobsPerWorker] for x in range(0, len(todos), jobsPerWorker)]
-print workers
-quit()
+
+print "found "+str(len(workers))+" jobs to submit"
+
+#print workers
+#quit()
 i = 1
+
 for worker in workers:
     poolfile = './pool/worker-' + str(i) + '.txt'
     with open(poolfile, 'w') as outfile:
@@ -35,4 +41,5 @@ for worker in workers:
                                   stdin=open(os.devnull),
                                   shell=True,
                                   stdout=subprocess.PIPE).communicate()[0]
+        print "submitted {jobs} jobs with job number: {job}".format(jobs=len(worker), job=output)
         i += 1
