@@ -108,7 +108,7 @@ class AlphaBeta2Dat():
         else:
             idum = 0 - idum
 
-        for j in range(self.NTAB, 0, -1):
+        for j in range(self.NTAB+7, -1, -1):
 
             k = idum / self.IQ
             idum = self.IA * (idum - k * self.IQ) - self.IR * k
@@ -118,6 +118,7 @@ class AlphaBeta2Dat():
                 iv[j] = idum
 
         iy = iv[0]
+
         k = idum / self.IQ
         idum = self.IA * (idum - k * self.IQ) - self.IR * k
         if idum < 0:
@@ -289,6 +290,33 @@ class AlphaBeta2Dat():
                 self.birdstate.A2 = 0.0
                 self.birdstate.A3 = 0.0
 
+            # print str(self.birdstate.A1) + "," + \
+            #       str(self.birdstate.A2) + "," + \
+            #       str(self.birdstate.A3) + "," + \
+            #       str(self.birdstate.alfa1) + "," + \
+            #       str(self.birdstate.alfa2) + "," + \
+            #       str(self.birdstate.alfa3) + "," + \
+            #       str(self.birdstate.amplitud) + "," + \
+            #       str(self.birdstate.Ancho1) + "," + \
+            #       str(self.birdstate.Ancho2) + "," + \
+            #       str(self.birdstate.Ancho3) + "," + \
+            #       str(self.birdstate.beta1) + "," + \
+            #       str(self.birdstate.beta2) + "," + \
+            #       str(self.birdstate.beta3) + "," + \
+            #       str(self.birdstate.forcing1) + "," + \
+            #       str(self.birdstate.forcing2) + "," + \
+            #       str(self.birdstate.gamma2) + "," + \
+            #       str(self.birdstate.gamma3) + "," + \
+            #       str(self.birdstate.gm) + "," + \
+            #       str(self.birdstate.noise) + "," + \
+            #       str(self.birdstate.r) + "," + \
+            #       str(self.birdstate.rdis) + "," + \
+            #       str(self.birdstate.LGoverLB) + "," + \
+            #       str(self.birdstate.RBoverLB) + "," + \
+            #       str(self.birdstate.s1overCH) + "," + \
+            #       str(self.birdstate.s1overLB) + "," + \
+            #       str(self.birdstate.s1overLG)
+            # quit()
             self.t += 1
 
 
