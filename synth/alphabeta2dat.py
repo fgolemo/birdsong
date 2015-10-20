@@ -216,10 +216,7 @@ class AlphaBeta2Dat():
         while self.t < self.to and self.v[1] > -5000000:
             self.dbold = self.db[self.t]
 
-            self.a[self.t] = 0.5 * (1.01 * (1.0 * (self.birdstate.A1 * self.v[1] +
-                                                   self.birdstate.A2 * self.v[6] +
-                                                   self.birdstate.A3 * self.v[9] / 10.))) + \
-                             self.bb[self.t - self.tau1]
+            self.a[self.t] = 0.5 * (1.01 * (self.birdstate.A1 * self.v[1])) + self.bb[self.t - self.tau1]
             self.bb[self.t] = self.r12 * self.a[self.t - self.tau1] + \
                               self.t21 * self.cb[self.t - self.tau2]
             self.bf[self.t] = self.t12 * self.a[self.t - self.tau1] + \
@@ -236,8 +233,6 @@ class AlphaBeta2Dat():
             self.birdstate.forcing2 = self.ddb
 
             self.tiempot += self.dt
-
-            self.birdstate.gm = 24000.0
 
             self.updateAnchos(False)
 
@@ -260,10 +255,6 @@ class AlphaBeta2Dat():
 
             if self.tiempot > 0.00:
 
-                self.birdstate.alfa1 = -0.15 - 0.00 * self.birdstate.amplitud
-                self.birdstate.alfa2 = 0.15
-                self.birdstate.beta2 = 0.1
-                self.birdstate.r = 0.1
                 self.idum, randomNoise = self.ran1(self.idum)
                 self.birdstate.noise = 0.21 * (randomNoise - 0.5)
                 self.birdstate.beta1 = self.birdstate.beta1 + 0.01 * self.birdstate.noise
@@ -287,12 +278,7 @@ class AlphaBeta2Dat():
                 if self.tiempot > 0.214 and self.tiempot < 0.255:
                     self.birdstate.A1 = self.birdstate.A1 / 2.0
 
-                self.birdstate.A2 = 0.0
-                self.birdstate.A3 = 0.0
-
             # print str(self.birdstate.A1) + "," + \
-            #       str(self.birdstate.A2) + "," + \
-            #       str(self.birdstate.A3) + "," + \
             #       str(self.birdstate.alfa1) + "," + \
             #       str(self.birdstate.alfa2) + "," + \
             #       str(self.birdstate.alfa3) + "," + \
@@ -311,8 +297,6 @@ class AlphaBeta2Dat():
             #       str(self.birdstate.noise) + "," + \
             #       str(self.birdstate.r) + "," + \
             #       str(self.birdstate.rdis) + "," + \
-            #       str(self.birdstate.LGoverLB) + "," + \
-            #       str(self.birdstate.RBoverLB) + "," + \
             #       str(self.birdstate.s1overCH) + "," + \
             #       str(self.birdstate.s1overLB) + "," + \
             #       str(self.birdstate.s1overLG)
@@ -322,9 +306,7 @@ class AlphaBeta2Dat():
 
 class BirdState():
     A1 = 0.0
-    A2 = 0.0
-    A3 = 0.0
-    alfa1 = 0.0
+    alfa1 = -0.15
     alfa2 = 0.15
     alfa3 = 10000000.0
     amplitud = 0.0
@@ -332,18 +314,16 @@ class BirdState():
     Ancho2 = 0.2
     Ancho3 = 0.2
     beta1 = 0.0
-    beta2 = 0.15
+    beta2 = 0.1
     beta3 = -200.0
     forcing1 = 0.0
     forcing2 = 0.0
     gamma2 = 1.0
     gamma3 = 1.0
-    gm = 0.0
-    LGoverLB = 0.0
+    gm = 24000.0
     noise = 0.0
-    r = 0.4
+    r = 0.1
     RB = 1e07
-    RBoverLB = 0.0
     rdis = 7000.0
     s1overLG = 0.1
     s1overLB = 1e-04
