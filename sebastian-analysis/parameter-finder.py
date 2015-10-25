@@ -1,43 +1,88 @@
 from __future__ import division
-# from pylab import *
 import numpy as np
 import matplotlib as mpl
-
-mpl.use('Agg')
+# mpl.use('Agg')
 import matplotlib.pyplot as plt
 import sys
-import os
 from scipy import fft, ifft
 from scikits.audiolab import flacread, Format, Sndfile
 from parameters import parameters
 
+__author__ = 'Florian'
 
-""" On the cluster separate a given birdsong recording into it's component syllables or motifs.
+""" For a given bird recording plot the wave diagram and the spectrogram, then filter out only syllables or motifs.
+The parameters are stored in the file parameters.py and are loaded each run and selected based on the variables pBird and
+pType in this file. Each run of this script is to make sure the parameters lead to a good fit. Usually after each run
+the parameters are adjusted a little bit and then this script is rerun.
 """
 
 if __name__ == "__main__":
 
-    __author__ = 'Florian'
-
     zero_val = parameters['zero_val']  # the value that wave data gets set to if it's not a syllable
 
-    birdDataDir = "/argile/golemo/birddata-flac/"
-    outDir = "/argile/golemo/birddata-syllables/"
+    # Params for bird 112 - whole motif
+    # amp_threshold = 1.5e-08
+    # freq_threshold = 9
+    # smoothing = 5
+    # Params for bird 112 - single syllables
+    # amp_threshold = 1.5e-08
+    # freq_threshold = 5
+    # smoothing = 3
 
-    outDir = os.path.expanduser(outDir)
+    # Params for bird 1136 - whole motif
+    # amp_threshold = 1e-09
+    # freq_threshold = 8
+    # smoothing = 12
+    # Params for bird 1136 - single syllables
+    # amp_threshold = 1e-08
+    # freq_threshold = 4
+    # smoothing = 4
 
-    if not os.path.exists(outDir):
-        os.makedirs(outDir)
+    # Params for bird 1233 - whole motif
+    # amp_threshold = 1e-08
+    # freq_threshold = 7
+    # smoothing = 4
+    # Params for bird 1233 - single syllables
+    # amp_threshold = 7e-09
+    # freq_threshold = 3
+    # smoothing = 4
 
-    inData = sys.argv[1].split(",")  # [0] = #bird, [1] = day, [2] = hour, [3] = min, [4] = sec, [5] = filename
-    inFile = os.path.expanduser(birdDataDir) + inData[0] + '/' + inData[1] + '/' + inData[5]
+    # Params for bird 1592 - whole motif
+    # amp_threshold = 4.1e-08
+    # freq_threshold = 2
+    # smoothing = 12
+    # Params for bird 1592 - single syllables
+    # amp_threshold = 1e-09
+    # freq_threshold = 5
+    # smoothing = 2
 
-    pBird = str(inData[0])
+
+    pBird = '1592' # bird number as string
     pType = 'syllable' # ['motif'|'syllable]
 
-    amp_threshold = parameters[pBird][pType][0]
-    freq_threshold = parameters[pBird][pType][1]
-    smoothing = parameters[pBird][pType][2]
+    amp_threshold = parameters[pBird][pType][0]  # if the amp of any freq is higher than this, it will be counted as good
+    freq_threshold = parameters[pBird][pType][1]  # if the number of good freqs (see prev line) is higher than this, it's probably birdsong
+    smoothing = parameters[pBird][pType][2]  # HAS TO BE >1, also keep the bins N to the left and right of good segments
+
+
+
+    if smoothing <= 1:
+        quit("smoothing has to be >1")
+
+    if len(sys.argv) == 2:
+        inFile = sys.argv[1]
+    else:
+        if len(sys.argv) > 2:
+            quit("only one optional argument: path to wav file that is to be analyzed")
+        else:
+            # inFile = 'audio-samples/b112.d54.t481481.flac'
+            # inFile = 'audio-samples/b112.d92.t5639583333.flac'
+            # inFile = 'audio-samples/b1136.d94.t282148.flac'
+            # inFile = 'audio-samples/b1136.d94.t24981322.flac'
+            # inFile = 'audio-samples/b1233.d48.t4839703.flac'
+            # inFile = 'audio-samples/b1233.d92.t44511791.flac'
+            # inFile = 'audio-samples/b1592.d54.t66047281.flac'
+            inFile = 'audio-samples/b1592.d91.t65217093.flac'
 
     data, sample_freq, encoding = flacread(inFile)
 
@@ -103,14 +148,8 @@ if __name__ == "__main__":
         f = None
         filecount = 0
 
-        def __init__(self, outDir, inData):
-            self.outDir = outDir
-            self.inData = inData
-
         def open(self):
-            filename = inData[0] + "-" + inData[1] + "-" + inData[2] + "-" + inData[3] + "-" + inData[4]
-            self.f = Sndfile(self.outDir + filename + ".syllable-" + str(self.syllableIndex) + '.flac', 'w',
-                             self.format, 1, 44100)
+            self.f = Sndfile(self.baseFilename + "." + str(self.syllableIndex) + '.flac', 'w', self.format, 1, 44100)
             self.fileOpen = True
 
         def close(self):
@@ -135,8 +174,10 @@ if __name__ == "__main__":
                     self.close()
                 else:
                     buffer.append(data[i])
+                    # print self.filecount
 
 
-    aud = AudioWriter(outDir, inData)
-    aud.parseData(dataMod)
+    # aud = AudioWriter()
+    # aud.parseData(dataMod)
 
+    plt.show()

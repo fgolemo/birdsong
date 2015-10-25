@@ -5,41 +5,46 @@ import sys
 
 __author__ = 'Florian'
 
-jobsPerWorker = 50
+""" Using the pickle file created in the previous step, submit jobs to the cluster.
+Pool 50 jobs at a time, and only submit jobs for a given bird.
+"""
 
-os.chdir(os.path.dirname(sys.argv[0]))
+if __name__ == "__main__":
+    jobsPerWorker = 50
 
-# This script takes the list from step one and for each N lines it submits a job to the cluster
+    os.chdir(os.path.dirname(sys.argv[0]))
 
-bird = 112
-if len(sys.argv) == 2:
-    bird = int(sys.argv[1])
+    # This script takes the list from step one and for each N lines it submits a job to the cluster
 
-for folder in ["./pool", "./logs"]:
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    bird = 112
+    if len(sys.argv) == 2:
+        bird = int(sys.argv[1])
 
-songsPerDay = pickle.load(open('todo-cluster.pickle', "rb"))
-todos = songsPerDay[str(bird)]
+    for folder in ["./pool", "./logs"]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
-workers = [todos[x:x + jobsPerWorker] for x in range(0, len(todos), jobsPerWorker)]
+    songsPerDay = pickle.load(open('todo-cluster.pickle', "rb"))
+    todos = songsPerDay[str(bird)]
 
-print "found "+str(len(workers))+" jobs to submit"
+    workers = [todos[x:x + jobsPerWorker] for x in range(0, len(todos), jobsPerWorker)]
 
-#print workers
-#quit()
-i = 1
+    print "found "+str(len(workers))+" jobs to submit"
 
-for worker in workers:
-    poolfile = './pool/worker-' + str(i) + '.txt'
-    with open(poolfile, 'w') as outfile:
-        for line in worker:
-            outfile.write(",".join(line) + '\n')
-        cmd = 'qsub syllable-worker.sh -v pool=' + poolfile
-        output = subprocess.Popen(cmd,
-                                  stderr=open("./logs/submit." + str(i) + ".stderr.log", "w"),
-                                  stdin=open(os.devnull),
-                                  shell=True,
-                                  stdout=subprocess.PIPE).communicate()[0]
-        print "submitted {jobs} jobs with job number: {job}".format(jobs=len(worker), job=output)
-        i += 1
+    #print workers
+    #quit()
+    i = 1
+
+    for worker in workers:
+        poolfile = './pool/worker-' + str(i) + '.txt'
+        with open(poolfile, 'w') as outfile:
+            for line in worker:
+                outfile.write(",".join(line) + '\n')
+            cmd = 'qsub syllable-worker.sh -v pool=' + poolfile
+            output = subprocess.Popen(cmd,
+                                      stderr=open("./logs/submit." + str(i) + ".stderr.log", "w"),
+                                      stdin=open(os.devnull),
+                                      shell=True,
+                                      stdout=subprocess.PIPE).communicate()[0]
+            print "submitted {jobs} jobs with job number: {job}".format(jobs=len(worker), job=output)
+            i += 1

@@ -1,4 +1,5 @@
-__author__ = 'florian'
+""" Store the syllable/motif separation thresholds in a dictionary called "parameters".
+"""
 
 parameters = {
     '112': {

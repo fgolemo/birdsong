@@ -6,6 +6,12 @@
 #PBS -M fgolemo@gmail.com
 #PBS -l walltime=00:59:59
 #PBS -l ncpus=16
+
+# Execute up to 16 jobs in parallel on the cluster,
+# where a job is executing the python script syllable-analysis-cluster-worker.py
+# to find syllables in birdsong recordings. Read the file names from the provided pool file
+
+
 export PATH=$PATH:$HOME/libsndfile/bin/
 export PYTHONPATH=$PYTHONPATH:$HOME/pylib/lib/python2.7/site-packages/
 
