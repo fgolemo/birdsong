@@ -2,6 +2,8 @@ import math
 
 
 class AlphaBeta2Dat():
+    
+
     def __init__(self, alphaFile, envelopeFile):
         self.numberOfLines = sum(1 for line in open(alphaFile))
         self.outputFile = alphaFile[:-4] + ".song.dat"
