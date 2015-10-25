@@ -2,7 +2,28 @@ import math
 
 
 class AlphaBeta2Dat():
-    
+    """ Translate an input file of alpha and beta values to DAT.
+
+    This file is a direct port of the amazing C code used to synthesize
+    Zebra Finch sounds, created by the Dynamic Systems lab at Universidad de Buenos Aires.
+
+    This class will read two files, for alpha and beta values (alpha = labia tension,
+    beta = air pressure). The output is a DAT file that can be compiled to WAV (code for that is provided by
+    the Buenos Aires group).
+
+    Frankly I have no remote idea what's happening in this file. It's random variable names that I just
+    copied from the original file and random crazy calculations without any clear purpose. Yet this code works almost
+    as good as the original code (not in speed but in function). The whole purpose of this port was to better
+    understand what's happening in this weird mess of code, but this is too big of a feat for any single man.
+
+    Instead the current function of this class is to serve as precursor for what will later become part of the
+    Birdsond Architecture, where it will be used a blackbox.
+
+    For usage of this file, please see the main function for an example.
+
+    :param alphaFile: path to the file with the alpha values
+    :param envelopeFile: path to the file with the envelope (beta) values
+    """
 
     def __init__(self, alphaFile, envelopeFile):
         self.numberOfLines = sum(1 for line in open(alphaFile))
