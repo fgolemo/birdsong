@@ -25,14 +25,10 @@ class AlphaBeta2Dat():
     :param envelopeFile: path to the file with the envelope (beta) values
     """
 
-    def __init__(self, alphaFile, envelopeFile):
-        self.numberOfLines = sum(1 for line in open(alphaFile))
-        self.outputFile = alphaFile[:-4] + ".song.dat"
-
-        self.alphaFileHandle = open(alphaFile, "r")
-        self.envelopeFileHandle = open(envelopeFile, "r")
-        self.outputFileHandle = open(self.outputFile, "w")
-
+    def __init__(self, alphaBetaStream, outputStream, numberOfLines):
+        self.alphaBetaStream = alphaBetaStream
+        self.outputStream = outputStream
+        self.numberOfLines = numberOfLines
         self.defineConstants()
         self.birdstate = BirdState()
         self.initV()
@@ -235,6 +231,7 @@ class AlphaBeta2Dat():
         return dv
 
     def mainLoop(self):
+        # print "alpha,beta"
         while self.t < self.to and self.v[1] > -5000000:
             self.dbold = self.db[self.t]
 
@@ -268,13 +265,10 @@ class AlphaBeta2Dat():
             self.preout = self.birdstate.RB * self.v[4]
 
             if self.taux == 20:
-                betaLine = self.alphaFileHandle.readline().split()
-                self.birdstate.beta1 = float(betaLine[1])
 
-                envelopeLine = self.envelopeFileHandle.readline().split()
-                self.birdstate.amplitud = float(envelopeLine[2])
+                (self.birdstate.amplitud, self.birdstate.beta1) = self.alphaBetaStream()
 
-                self.outputFileHandle.write(str(self.preout * 10) + "\n")
+                self.outputStream(self.preout * 10)
 
                 self.taux = 0
 
@@ -352,5 +346,25 @@ if __name__ == "__main__":
         print "please invoke this script with 2 parameters: (path to the file with beta values over time) and (path to envelope file)"
         quit()
 
-    ab2d = AlphaBeta2Dat(alphaFile=sys.argv[1], envelopeFile=sys.argv[2])
+    alphaFile=sys.argv[1]
+    envelopeFile=sys.argv[2]
+    alphaFileHandle = open(alphaFile, "r")
+    envelopeFileHandle = open(envelopeFile, "r")
+    numberOfLines = sum(1 for line in open(alphaFile))
+    outputFile = alphaFile[:-4] + ".song.dat"
+    outputFileHandle = open(outputFile, "w")
+
+    def alphaBetaStream():
+        betaLine = alphaFileHandle.readline().split()
+        beta = float(betaLine[1])
+
+        envelopeLine = envelopeFileHandle.readline().split()
+        alpha = float(envelopeLine[2])
+
+        return (alpha, beta)
+
+    def outStream(line):
+        outputFileHandle.write(str(line) + "\n")
+
+    ab2d = AlphaBeta2Dat(alphaBetaStream, outStream, numberOfLines)
     ab2d.mainLoop()
