@@ -25,10 +25,9 @@ class AlphaBeta2Dat():
     :param envelopeFile: path to the file with the envelope (beta) values
     """
 
-    def __init__(self, alphaBetaStream, outputStream, numberOfLines):
+    def __init__(self, alphaBetaStream, outputStream):
         self.alphaBetaStream = alphaBetaStream
         self.outputStream = outputStream
-        self.numberOfLines = numberOfLines
         self.defineConstants()
         self.birdstate = BirdState()
         self.initV()
@@ -56,7 +55,6 @@ class AlphaBeta2Dat():
         self.tnoise = 0
         self.atenua = 1
         self.dt = 1. / (self.Hertz * self.stepping)
-        self.to = self.numberOfLines * self.stepping
         self.updateAnchos(True)
         self.ancho3 = self.ancho2
         self.largo1 = 1.5
@@ -92,13 +90,13 @@ class AlphaBeta2Dat():
         self.t = int(self.maxtau)
         self.taux = 0
 
-        self.a = [0] * int(self.to)
-        self.bf = [0] * int(self.to)
-        self.bb = [0] * int(self.to)
-        self.cf = [0] * int(self.to)
-        self.cb = [0] * int(self.to)
-        self.df = [0] * int(self.to)
-        self.db = [0] * int(self.to)
+        self.a = [0] * int(self.t)
+        self.bf = [0] * int(self.t)
+        self.bb = [0] * int(self.t)
+        self.cf = [0] * int(self.t)
+        self.cb = [0] * int(self.t)
+        self.df = [0] * int(self.t)
+        self.db = [0] * int(self.t)
 
     def initV(self):
         self.v = [
@@ -232,23 +230,26 @@ class AlphaBeta2Dat():
 
     def mainLoop(self):
         # print "alpha,beta"
-        while self.t < self.to and self.v[1] > -5000000:
-            self.dbold = self.db[self.t]
+        while self.v[1] > -5000000:
+            if len(self.db) == self.t-1:
+                self.dbold = self.db[self.t]
+            else:
+                self.dbold = 0
 
-            self.a[self.t] = 0.5 * (1.01 * (1.0 * (self.birdstate.A1 * self.v[1] +
-                                                   self.birdstate.A2 * self.v[6] +
-                                                   self.birdstate.A3 * self.v[9] / 10.))) + \
-                             self.bb[self.t - self.tau1]
-            self.bb[self.t] = self.r12 * self.a[self.t - self.tau1] + \
-                              self.t21 * self.cb[self.t - self.tau2]
-            self.bf[self.t] = self.t12 * self.a[self.t - self.tau1] + \
-                              self.r21 * self.cb[self.t - self.tau2]
+            self.a.append(0.5 * (1.01 * (1.0 * (self.birdstate.A1 * self.v[1] +
+                                                self.birdstate.A2 * self.v[6] +
+                                                self.birdstate.A3 * self.v[9] / 10.))) + \
+                          self.bb[self.t - self.tau1])
+            self.bb.append(self.r12 * self.a[self.t - self.tau1] + \
+                           self.t21 * self.cb[self.t - self.tau2])
+            self.bf.append(self.t12 * self.a[self.t - self.tau1] + \
+                           self.r21 * self.cb[self.t - self.tau2])
 
-            self.cb[self.t] = self.r23 * self.bf[self.t - self.tau2] + \
-                              self.t32 * self.db[self.t - self.tau3]
-            self.cf[self.t] = self.t23 * self.bf[self.t - self.tau2] + \
-                              self.r32 * self.db[self.t - self.tau3]
-            self.db[self.t] = -self.birdstate.r * self.cf[self.t - self.tau3]
+            self.cb.append(self.r23 * self.bf[self.t - self.tau2] + \
+                           self.t32 * self.db[self.t - self.tau3])
+            self.cf.append(self.t23 * self.bf[self.t - self.tau2] + \
+                           self.r32 * self.db[self.t - self.tau3])
+            self.db.append(-self.birdstate.r * self.cf[self.t - self.tau3])
 
             self.ddb = (self.db[self.t] - self.dbold) / self.dt
             self.birdstate.forcing1 = self.db[self.t]
@@ -265,10 +266,10 @@ class AlphaBeta2Dat():
             self.preout = self.birdstate.RB * self.v[4]
 
             if self.taux == 20:
-
-                (self.birdstate.amplitud, self.birdstate.beta1) = self.alphaBetaStream()
-
                 self.outputStream(self.preout * 10)
+                (self.birdstate.amplitud, self.birdstate.beta1) = self.alphaBetaStream()
+                if self.birdstate.amplitud == False:  # input stream is over
+                    break
 
                 self.taux = 0
 
@@ -346,16 +347,18 @@ if __name__ == "__main__":
         print "please invoke this script with 2 parameters: (path to the file with beta values over time) and (path to envelope file)"
         quit()
 
-    alphaFile=sys.argv[1]
-    envelopeFile=sys.argv[2]
+    alphaFile = sys.argv[1]
+    envelopeFile = sys.argv[2]
     alphaFileHandle = open(alphaFile, "r")
     envelopeFileHandle = open(envelopeFile, "r")
-    numberOfLines = sum(1 for line in open(alphaFile))
     outputFile = alphaFile[:-4] + ".song.dat"
     outputFileHandle = open(outputFile, "w")
 
+
     def alphaBetaStream():
         betaLine = alphaFileHandle.readline().split()
+        if len(betaLine) == 0:
+            return (False, False)
         beta = float(betaLine[1])
 
         envelopeLine = envelopeFileHandle.readline().split()
@@ -363,8 +366,10 @@ if __name__ == "__main__":
 
         return (alpha, beta)
 
+
     def outStream(line):
         outputFileHandle.write(str(line) + "\n")
 
-    ab2d = AlphaBeta2Dat(alphaBetaStream, outStream, numberOfLines)
+
+    ab2d = AlphaBeta2Dat(alphaBetaStream, outStream)
     ab2d.mainLoop()
