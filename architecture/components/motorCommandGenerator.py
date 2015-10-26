@@ -2,23 +2,31 @@ import math
 
 
 class MotorCommandGenerator():
+    """ Make the raw motor parameters into alpha/beta values over time
+    """
+
     frequency = 10  # number of steps per second
 
     def __init__(self, frequency):
         self.frequency = frequency
 
     def getList(self, params):
-        # this is for generating lists here, in case that is needed anywhere
+        """ generate the values in the form of a list, in case that is preferred over a generator
+        """
         out = []
         for values in self.getGenerator(params):
             out.append(values)
         return out
 
     def getGenerator(self, params):
-        # general formula:
-        # alpha = a + b * t + c * sin(d + e*t)
-        # beta = f + g * t + h * sin(i + j*t)
-        # for t=[0,k] seconds
+        """ generate the actual pattern over time, return a generator
+
+        general formula:
+
+        alpha = a + b * t + c * sin(d + e*t)
+        beta = f + g * t + h * sin(i + j*t)
+        for t=[0,k] seconds
+        """
         t = 0.0
         while t <= params[10] * self.frequency:
             t_adjusted = t / self.frequency
