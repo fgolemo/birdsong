@@ -1,5 +1,9 @@
+from scipy.io import wavfile
+import numpy as np
+
 from ..synth.alphabeta2dat import AlphaBeta2Dat
 from .motorCommandGenerator import MotorCommandGenerator
+from ..synth.dat2wav import Dat2Wav
 
 
 class SoundSynthesizer():
@@ -32,10 +36,15 @@ if __name__ == "__main__":
             return (False, False)
 
 
-
+    output = []
     def outputStream(content):
-        print content
+        global output
+        output.append(content)
 
 
     ss = SoundSynthesizer(inputStream, outputStream)
     ss.synthesize()
+
+    d2w = Dat2Wav
+    sound = d2w.convert(output)
+    d2w.writeWAV(sound, "testsound2.wav", 44100)
