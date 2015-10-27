@@ -33,6 +33,8 @@ class MotorCommandGenerator():
             alpha = params[0] + \
                     (params[1] * t_adjusted) + \
                     (params[2] * math.sin(params[3] + params[4] * t_adjusted))
+            if alpha < 0:
+                alpha = 0
             beta = params[5] + \
                    (params[6] * t_adjusted) + \
                    (params[7] * math.sin(params[8] + params[9] * t_adjusted))

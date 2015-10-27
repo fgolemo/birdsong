@@ -13,7 +13,10 @@ class Dat2Wav():
 
         sound = []
 
-        scalingFactor = 65535.0 / (ampMax - ampMin)
+        if ampMax - ampMin == 0:
+            scalingFactor = 1
+        else:
+            scalingFactor = 65535.0 / (ampMax - ampMin)
         for line in inputListFloat:
             amp = int(round(((line - ampMin) * scalingFactor) - 32768.0))
 
