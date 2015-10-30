@@ -52,5 +52,10 @@ if __name__ == "__main__":  # for testing
         print mc
 
     print "list:"
-    for mc in mcg.getList(params):
+    mcList = mcg.getList(params)
+    for mc in mcList:
         print mc
+
+    import matplotlib.pyplot as plt
+    plt.plot(mcList)
+    plt.show()
