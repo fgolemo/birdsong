@@ -112,6 +112,7 @@ mfcc1 = h.calcMfcc(testFile1)
 mfcc2 = h.calcMfcc(testFile2)
 
 mfccZero = np.zeros([3, 22])
+mfccMin = np.full([3, 22], max(mfcc1.ravel()))
 
 mfcc1Range = getSpanOffset(mfcc1)[0]/2
 mfccRandom = (np.random.rand(3, 23) * 2 - 1) * mfcc1Range
@@ -132,6 +133,9 @@ print "similarity:",compare(mfccRandom, mfccZero, bias)
 
 bias = lookahead(mfccRandom, mfccRandom2, 3)
 print "similarity:",compare(mfccRandom, mfccRandom2, bias)
+
+bias = lookahead(mfcc1, mfccMin, 3)
+print "similarity:",compare(mfcc1, mfccMin, bias)
 
 # print min(mfcc1.ravel())
 # print max(mfcc1.ravel())
