@@ -115,6 +115,7 @@ mfccZero = np.zeros([3, 22])
 
 mfcc1Range = getSpanOffset(mfcc1)[0]/2
 mfccRandom = (np.random.rand(3, 23) * 2 - 1) * mfcc1Range
+mfccRandom2 = (np.random.rand(3, 23) * 2 - 1) * mfcc1Range
 
 
 bias = lookahead(mfcc1, mfcc2, 3)
@@ -129,8 +130,9 @@ print "similarity:",compare(mfcc1, mfccRandom, bias)
 bias = lookahead(mfccRandom, mfccZero, 3)
 print "similarity:",compare(mfccRandom, mfccZero, bias)
 
-# print min(mfcc1.ravel())
-# print max(mfcc1.ravel())
+bias = lookahead(mfccRandom, mfccRandom2, 3)
+print "similarity:",compare(mfccRandom, mfccRandom2, bias)
+
 
 # ax1 = plt.subplot(4, 1, 1)
 # librosa.display.specshow(mfcc1, x_axis='time')
