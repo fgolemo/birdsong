@@ -61,7 +61,7 @@ def compareStep(mfcc1, mfcc2, bias, index, spanOffset):
             localFits.append(0)
             continue
 
-        error = mfcc1[:, index] - mfcc2[:, index + bias + i]
+        error = normalizeMfccSlice(mfcc1[:, index],spanOffset) - normalizeMfccSlice(mfcc2[:, index + bias + i], spanOffset)
         # print "index",index,"i",i,"bias",bias,"mfcc1",mfcc1[:,index],"mfcc2",mfcc2[:,index + bias + i],"diff",diff
         scaledLocalFitness = calcFitnessFromError(error, spanOffset, i)
         # print "scaled",scaledLocalFitness
@@ -70,6 +70,12 @@ def compareStep(mfcc1, mfcc2, bias, index, spanOffset):
     # print "best fit index:",localFitIndices[localFits.index(max(localFits))]
     return max(localFits)
 
+def normalizeMfccSlice(mfccSlice, spanOffset):
+    span = spanOffset[0]
+    offset = spanOffset[1]
+    sliceNormalized = (mfccSlice+offset)/span
+    return sliceNormalized
+
 def calcFitnessFromError(error, spanOffset, i):
     normSigma = 0  # mean of the normal distribution which punishes differences in timing
     normMu = 1.0  # std. deviation of the normal distribtuion which punishes differences in timing
@@ -77,14 +83,7 @@ def calcFitnessFromError(error, spanOffset, i):
         0)  # scaling factor so that the probability density at time x=0 is 1
     normWidth = 3  # number of indices to check, right and left of the biased index
 
-    # print "error",error
-    span = spanOffset[0]
-    offset = spanOffset[1]
-    normalizedError = (error+offset)/(span/2)
-    # print "normalizedError",normalizedError
-    # squaredNormalizedError = normalizedError**2
-    squaredNormalizedError = [abs(e) for e in normalizedError]
-    # print "squaredNormalizedError",squaredNormalizedError
+    squaredNormalizedError = [abs(e) for e in error]
 
     errorSum = sum(squaredNormalizedError)/3
     # print "diffsum:",errorSum
