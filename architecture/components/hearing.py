@@ -18,7 +18,7 @@ class Hearing:
         if not os.path.isfile(soundFile):
             print "ERR: sound file couldn't be found:" + str(soundFile)
             return False
-        data, sr = librosa.load(testFile)
+        data, sr = librosa.load(soundFile)
 
         # Compute MFCC features from the raw signal, 13 channels is a reasonable resolution,
         # mappable onto the chromatic spectrum

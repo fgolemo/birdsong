@@ -6,6 +6,9 @@ class Comparator:
         :param strategy: String, currently either "seq" or "sim" for "sequential" and "simultaneous" respectively
         :return: None
         """
+        if strategy not in ["seq", "sim"]:
+            raise AttributeError("please initialize the comparater with the strategy "
+                                 "parameter being either 'seq' or 'sim'. You provided: '"+str(strategy)+"'")
         self.strategy = strategy
 
     def calcDiff(self, tutorMfcc, songMfccList, isDayTime):
