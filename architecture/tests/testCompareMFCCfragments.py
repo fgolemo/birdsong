@@ -1,6 +1,4 @@
-import random
 import librosa
-import math
 import matplotlib.pyplot as plt
 from architecture.components.hearing import Hearing
 import scipy.stats

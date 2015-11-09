@@ -1,5 +1,7 @@
 import scipy.stats
 
+from architecture.components.hearing import Hearing
+
 
 class Comparator:
     def __init__(self, strategy):
@@ -14,13 +16,13 @@ class Comparator:
         self.strategy = strategy
 
         self.normSigma = 0  # mean of the normal distribution which punishes differences in timing
-        self.normMu = 1.0  # std. deviation of the normal distribtuion which punishes differences in timing
+        self.normMu = 1.5  # std. deviation of the normal distribtuion which punishes differences in timing
         # scaling factor so that the probability density at time x=0 is 1
         self.normScaling = 1.0 / scipy.stats.norm(self.normSigma, self.normMu).pdf(0)
         self.normWidth = 3  # number of indices to check, right and left of the biased index
         self.biasLookahead = 3  # dynamic time shift width (+/- N timesteps / MFCC buckets)
 
-    def calcDiff(self, tutorMfcc, songMfccList, isDayTime):
+    def compare(self, tutorMfcc, songMfccList, isDayTime):
         """ calculate the fitness of a given song, compared to the tutorsong,
         while paying attention to the strategy and the day/night cycle
 
@@ -34,12 +36,14 @@ class Comparator:
         fits = []
 
         for syllableMfcc in songMfccList:
-            syllableMfccLen = len(syllableMfcc)
-            if lastTutorIndex + syllableMfccLen > len(tutorMfcc):
+            syllableMfccLen = len(syllableMfcc[1,:])
+            if lastTutorIndex + syllableMfccLen > len(tutorMfcc[1,:]):
                 fits.append(0)
                 continue
-            tutorMfccInterval = tutorMfcc[:, lastTutorIndex:syllableMfccLen]
-            fragmentBias = self.lookahead(tutorMfccInterval, syllableMfcc, self.biasLookahead)
+            tutorMfccInterval = tutorMfcc[:, lastTutorIndex:lastTutorIndex+syllableMfccLen]
+            # fragmentBias = self.lookahead(tutorMfccInterval, syllableMfcc, self.biasLookahead)
+            fragmentBias = 0
+            # temp fix: set bias to 0 ... don't know why, but performs better
             fit = self.compareSyllable(tutorMfccInterval, syllableMfcc, fragmentBias)
             fits.append(fit)
             lastTutorIndex += syllableMfccLen
@@ -76,7 +80,6 @@ class Comparator:
         spanOffset = self.getSpanOffset(mfcc1)
         for index in range(len(mfcc1[1, :])):
             fitness = self.compareStep(mfcc1, mfcc2, bias, index, spanOffset)
-            # print fitness
             fits.append(fitness)
         averageFit = float(sum(fits)) / len(fits)
         return averageFit
@@ -99,7 +102,7 @@ class Comparator:
     def calcFitnessFromError(self, error, spanOffset, i):
         span = spanOffset[0]
         offset = spanOffset[1]
-        normalizedError = (error + offset) / (span / 2)
+        normalizedError = error / (span / 2)
         absNormalizedError = [abs(e) for e in normalizedError]
 
         errorSum = sum(absNormalizedError) / 3
@@ -119,5 +122,53 @@ class Comparator:
 
 
 if __name__ == "__main__":
-    # TODO: implement tests
-    pass
+    import numpy as np
+
+    testFile1 = "../tests/testSong1Original.wav"
+    testFile2 = "../tests/testSong2Synth.wav"
+
+    h = Hearing(tutorsong=None)
+    mfcc1 = h.calcMfcc(testFile1)
+    mfcc2 = h.calcMfcc(testFile2)
+
+    mfccZero = np.zeros([3, 22])
+    mfccMin = np.full([3, 22], max(mfcc1.ravel()))
+
+    mfccRandom = (np.random.rand(3, 23) * 2 - 1) * 150
+    mfccRandom2 = (np.random.rand(3, 23) * 2 - 1) * 150
+
+    tutorsong = np.concatenate((mfcc1, mfcc1, mfcc1, mfcc1, mfcc1),axis=1)
+    syllablesMfccs = [
+        mfcc1,
+        mfcc2,
+        mfccZero,
+        mfccRandom,
+        mfccRandom2
+    ]
+
+    print tutorsong.shape
+
+    comp = Comparator("sim")
+    fits = comp.compare(tutorsong, syllablesMfccs, True)
+    print "fits:"
+    for fit in fits:
+        print fit
+
+    import librosa
+    import matplotlib.pyplot as plt
+
+    ax1 = plt.subplot(2, 1, 1)
+    librosa.display.specshow(tutorsong, x_axis='time')
+    plt.colorbar()
+    plt.title('MFCC tutorsong')
+
+    plt.subplot(2, 1, 2)
+    librosa.display.specshow(np.concatenate(tuple(syllablesMfccs),axis=1), x_axis='time')
+    plt.colorbar()
+    plt.title('MFCC syllables')
+
+    plt.tight_layout()
+    plt.show()
+
+
+
