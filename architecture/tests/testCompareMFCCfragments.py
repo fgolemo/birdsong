@@ -137,30 +137,28 @@ print "similarity:",compare(mfccRandom, mfccRandom2, bias)
 bias = lookahead(mfcc1, mfccMin, 3)
 print "similarity:",compare(mfcc1, mfccMin, bias)
 
-# print min(mfcc1.ravel())
-# print max(mfcc1.ravel())
 
-# ax1 = plt.subplot(4, 1, 1)
-# librosa.display.specshow(mfcc1, x_axis='time')
-# plt.colorbar()
-# plt.title('MFCC')
-#
-# plt.subplot(4, 1, 2)
-# librosa.display.specshow(mfcc2, x_axis='time')
-# plt.colorbar()
-# plt.title('MFCC')
-#
-# plt.subplot(4, 1, 3)
-# librosa.display.specshow(mfccZero, x_axis='time')
-# plt.colorbar()
-# plt.title('MFCC')
-#
-# plt.subplot(4, 1, 4)
-# librosa.display.specshow(mfccRandom, x_axis='time')
-# plt.colorbar()
-# plt.title('MFCC')
-#
-# plt.tight_layout()
-# plt.show()
+ax1 = plt.subplot(4, 1, 1)
+librosa.display.specshow(mfcc1, x_axis='time')
+plt.colorbar()
+plt.title('MFCC')
+
+plt.subplot(4, 1, 2)
+librosa.display.specshow(mfcc2, x_axis='time')
+plt.colorbar()
+plt.title('MFCC')
+
+plt.subplot(4, 1, 3)
+librosa.display.specshow(mfccZero, x_axis='time')
+plt.colorbar()
+plt.title('MFCC')
+
+plt.subplot(4, 1, 4)
+librosa.display.specshow(mfccRandom, x_axis='time')
+plt.colorbar()
+plt.title('MFCC')
+
+plt.tight_layout()
+plt.show()
 
 
