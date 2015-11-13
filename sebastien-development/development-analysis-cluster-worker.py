@@ -1,4 +1,8 @@
-import os
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+
 import re
 from numpy import mean
 from numpy.fft import fft
@@ -6,65 +10,25 @@ from scipy.stats import gmean
 import pymir
 import pymir.SpectralFlux
 
-dirpath = "./audio-samples"
-regexFilePattern = re.compile(
-    r"([0-9]{3,4})-([0-9]{1,3})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})\.syllable-([0-9]{1,3})\.flac")
 
-print "bird," \
-      "day," \
-      "hour," \
-      "minute," \
-      "second," \
-      "syllable," \
-      "spectralFlatness," \
-      "energyMin," \
-      "energyMax," \
-      "energyMean," \
-      "amplitudeMin," \
-      "amplitudeMax," \
-      "amplitudeMean," \
-      "zeroCrossingRateMin," \
-      "zeroCrossingRateMax," \
-      "zeroCrossingRateMean," \
-      "spectralCentroidMin," \
-      "spectralCentroidMax," \
-      "spectralCentroidMean," \
-      "spectralCrestFactorMin," \
-      "spectralCrestFactorMax," \
-      "spectralCrestFactorMean," \
-      "spectralKurtosisMin," \
-      "spectralKurtosisMax," \
-      "spectralKurtosisMean," \
-      "spectralMeanMin," \
-      "spectralMeanMax," \
-      "spectralMeanMean," \
-      "spectralRolloffMin," \
-      "spectralRolloffMax," \
-      "spectralRolloffMean," \
-      "spectralSkewnessMin," \
-      "spectralSkewnessMax," \
-      "spectralSkewnessMean," \
-      "spectralSpreadMin," \
-      "spectralSpreadMax," \
-      "spectralSpreadMean," \
-      "spectralVarianceMin," \
-      "spectralVarianceMax," \
-      "spectralVarianceMean" \
-      "spectralFluxMin," \
-      "spectralFluxMax," \
-      "spectralFluxMean"
+""" TODO: document this
+"""
 
-import time
+if __name__ == "__main__":
+    inDir = "/argile/golemo/birddata-syllables/"
+    outDir = "/argile/golemo/birddata-syllables-csv/"
+    # inDir = "./audio-samples/"
+    # outDir = "./audio-samples/"
+    filename = sys.argv[1]
+    filepath = inDir + filename
 
-start = time.time()
+    outfilepath = outDir + filename + ".csv"
 
-goodfiles = 0
-for filename in os.listdir(dirpath):
+    regexFilePattern = re.compile(r"([0-9]{3,4})-([0-9]{1,3})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})\.syllable-([0-9]{1,3})\.flac")
     nameMatch = regexFilePattern.match(filename)
     if nameMatch is None:
-        continue
+        quit("file name pattern not suitable:"+filename)
 
-    goodfiles += 1
 
     # get file info
     bird = nameMatch.group(1)
@@ -75,7 +39,7 @@ for filename in os.listdir(dirpath):
     syllable = nameMatch.group(6)
 
     # extract data from flac
-    audioData = pymir.AudioFile.open(dirpath + os.path.sep + filename)
+    audioData = pymir.AudioFile.open(filepath)
 
     # calculate features (wiener entropy aka spectral flatness)
     spectrum = abs(fft(audioData))
@@ -173,11 +137,10 @@ for filename in os.listdir(dirpath):
 
     stringifiedOutput = [str(o) for o in output]
 
-    print ",".join(stringifiedOutput)
+    # print ",".join(stringifiedOutput)
 
-end = time.time()
-diff = end - start
-print diff
-perFileTime =  diff / goodfiles
-print perFileTime
-print (perFileTime * 5600000)/60/60
+    filehandle = open(outfilepath, "w")
+    filehandle.write(",".join(stringifiedOutput)+"\n")
+    filehandle.close()
+
+
