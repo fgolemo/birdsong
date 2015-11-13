@@ -1,10 +1,9 @@
 import scipy.stats
-
 from architecture.components.hearing import Hearing
 
 
 class Comparator:
-    def __init__(self, strategy):
+    def __init__(self, strategy, errorByChannel, errorSquared):
         """ Initialize the class: store the strategy
 
         :param strategy: String, currently either "seq" or "sim" for "sequential" and "simultaneous" respectively
@@ -14,6 +13,9 @@ class Comparator:
             raise AttributeError("please initialize the comparater with the strategy "
                                  "parameter being either 'seq' or 'sim'. You provided: '" + str(strategy) + "'")
         self.strategy = strategy
+
+        self.errorByChannel = errorByChannel
+        self.errorSquared = errorSquared
 
         self.normSigma = 0  # mean of the normal distribution which punishes differences in timing
         self.normMu = 1.5  # std. deviation of the normal distribtuion which punishes differences in timing
@@ -36,11 +38,11 @@ class Comparator:
         fits = []
 
         for syllableMfcc in songMfccList:
-            syllableMfccLen = len(syllableMfcc[1,:])
-            if lastTutorIndex + syllableMfccLen > len(tutorMfcc[1,:]):
+            syllableMfccLen = len(syllableMfcc[1, :])
+            if lastTutorIndex + syllableMfccLen > len(tutorMfcc[1, :]):
                 fits.append(0)
                 continue
-            tutorMfccInterval = tutorMfcc[:, lastTutorIndex:lastTutorIndex+syllableMfccLen]
+            tutorMfccInterval = tutorMfcc[:, lastTutorIndex:lastTutorIndex + syllableMfccLen]
             # fragmentBias = self.lookahead(tutorMfccInterval, syllableMfcc, self.biasLookahead)
             fragmentBias = 0
             # temp fix: set bias to 0 ... don't know why, but performs better
@@ -77,7 +79,11 @@ class Comparator:
 
     def compareSyllable(self, mfcc1, mfcc2, bias):
         fits = []
-        spanOffset = self.getSpanOffset(mfcc1)
+
+        if self.errorByChannel:
+            spanOffset = self.getSpanOffsetByChannel(mfcc1)
+        else:
+            spanOffset = self.getSpanOffset(mfcc1)
         for index in range(len(mfcc1[1, :])):
             fitness = self.compareStep(mfcc1, mfcc2, bias, index, spanOffset)
             fits.append(fitness)
@@ -100,10 +106,21 @@ class Comparator:
         return max(localFits)
 
     def calcFitnessFromError(self, error, spanOffset, i):
-        span = spanOffset[0]
-        offset = spanOffset[1]
-        normalizedError = error / (span / 2)
-        absNormalizedError = [abs(e) for e in normalizedError]
+        if not self.errorByChannel:
+            span = spanOffset[0]
+            offset = spanOffset[1]
+            normalizedError = error / (span / 2)
+        else:
+            for j in range(len(error)):
+                span = spanOffset[j][0]
+                offset = spanOffset[j][1]
+                error[j] = error[j] / (span / 2)
+            normalizedError = error
+
+        if not self.errorSquared:
+            absNormalizedError = [abs(e) for e in normalizedError]
+        else:
+            absNormalizedError = [e ** 2 for e in normalizedError]
 
         errorSum = sum(absNormalizedError) / 3
 
@@ -119,6 +136,14 @@ class Comparator:
         span = max(mfcc.ravel()) - min(mfcc.ravel())
         offset = (span / 2.0) - max(mfcc.ravel())
         return (span, offset)
+
+    def getSpanOffsetByChannel(self, mfcc):
+        output = []
+        for i in range(len(mfcc[:, 1])):
+            span = max(mfcc[i, :].ravel()) - min(mfcc[i, :].ravel())
+            offset = (span / 2.0) - max(mfcc[i, :].ravel())
+            output.append((span, offset))
+        return output
 
 
 if __name__ == "__main__":
@@ -137,7 +162,7 @@ if __name__ == "__main__":
     mfccRandom = (np.random.rand(3, 23) * 2 - 1) * 150
     mfccRandom2 = (np.random.rand(3, 23) * 2 - 1) * 150
 
-    tutorsong = np.concatenate((mfcc1, mfcc1, mfcc1, mfcc1, mfcc1),axis=1)
+    tutorsong = np.concatenate((mfcc1, mfcc1, mfcc1, mfcc1, mfcc1), axis=1)
     syllablesMfccs = [
         mfcc1,
         mfcc2,
@@ -148,7 +173,7 @@ if __name__ == "__main__":
 
     print tutorsong.shape
 
-    comp = Comparator("sim")
+    comp = Comparator(strategy="sim", errorByChannel=True, errorSquared=True)
     fits = comp.compare(tutorsong, syllablesMfccs, True)
     print "fits:"
     for fit in fits:
@@ -163,12 +188,9 @@ if __name__ == "__main__":
     plt.title('MFCC tutorsong')
 
     plt.subplot(2, 1, 2)
-    librosa.display.specshow(np.concatenate(tuple(syllablesMfccs),axis=1), x_axis='time')
+    librosa.display.specshow(np.concatenate(tuple(syllablesMfccs), axis=1), x_axis='time')
     plt.colorbar()
     plt.title('MFCC syllables')
 
     plt.tight_layout()
     plt.show()
-
-
-
