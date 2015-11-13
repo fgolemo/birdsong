@@ -44,7 +44,7 @@ trainingDataOutput = []
 for patternIndex in range(len(patterns)):
     mfccLen = getMfccLen(patterns[patternIndex][-1])
     for i in range(mfccLen):
-        patternWithTimestamp = patterns[patternIndex]+[i]
+        patternWithTimestamp = [i]+patterns[patternIndex]
         trainingDataInput.append(patternWithTimestamp)
         trainingDataOutput.append(mfccs[patternIndex][:,i])
 
@@ -57,7 +57,7 @@ y = np.atleast_2d(trainingDataOutput)
 print X.shape
 print y.shape
 
-gp = gaussian_process.GaussianProcess(theta0=1e-2)
+gp = gaussian_process.GaussianProcess(theta0=1e-2, regr="quadratic")
 print "created model, now fitting"
 gp.fit(X, y)
 print "fitted model, now predicting"
