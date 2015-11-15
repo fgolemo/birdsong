@@ -15,7 +15,7 @@
 export PATH=$PATH:$HOME/libsndfile/bin/
 export PYTHONPATH=$PYTHONPATH:$HOME/pylib/lib/python2.7/site-packages/
 
-cd $HOME/birdsong/sebastian-development
+cd $HOME/birdsong/sebastien-development
 
 nb_concurrent_processes=16
 j=0

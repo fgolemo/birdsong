@@ -38,11 +38,12 @@ if __name__ == "__main__":
     i = 1
 
     for worker in workers:
-        cmd = 'qsub development-worker.sh -v pool=' + worker
+        poolfilepath = pool + os.path.sep + worker
+        cmd = 'qsub development-worker.sh -v pool=' + poolfilepath
         output = subprocess.Popen(cmd,
                                   stderr=open("./logs/submit." + str(i) + ".stderr.log", "w"),
                                   stdin=open(os.devnull),
                                   shell=True,
                                   stdout=subprocess.PIPE).communicate()[0]
-        print "submitted {jobs} jobs with job number: {job}".format(jobs=len(worker), job=output)
+        print "submitted job with job number: {job}".format(job=output)
         i += 1

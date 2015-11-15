@@ -7,3 +7,4 @@ sebastian-analysis/logs/*
 *.pickle
 *.csv
 *.pyc
+*.pool
