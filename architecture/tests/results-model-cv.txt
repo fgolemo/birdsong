@@ -1,0 +1,77 @@
+"theta0": [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6],
+
+
+RandomizedSearchCV took 1198.17 seconds for 14 candidates parameter settings.
+Model with rank: 1
+Mean validation score: 0.318 (std: 0.037)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.6, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 2
+Mean validation score: 0.318 (std: 0.037)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.6, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 3
+Mean validation score: 0.314 (std: 0.036)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.55, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 4
+Mean validation score: 0.314 (std: 0.036)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.55, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 5
+Mean validation score: 0.309 (std: 0.036)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.5, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+=========
+ "theta0": [0.55, 0.6, 0.65, 0.7, 0.8, 0.9, 1.0],
+
+RandomizedSearchCV took 1534.57 seconds for 14 candidates parameter settings.
+Model with rank: 1
+Mean validation score: 0.328 (std: 0.042)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 1.0, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 2
+Mean validation score: 0.328 (std: 0.042)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 1.0, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 3
+Mean validation score: 0.328 (std: 0.041)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.9, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 4
+Mean validation score: 0.328 (std: 0.041)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.9, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 5
+Mean validation score: 0.326 (std: 0.039)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.8, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+
+=========
+
+"theta0": [0.9, 1.0, 2.0, 4.0, 8.0, 16.0],
+
+RandomizedSearchCV took 1054.05 seconds for 12 candidates parameter settings.
+Model with rank: 1
+Mean validation score: 0.328 (std: 0.042)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 1.0, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 2
+Mean validation score: 0.328 (std: 0.042)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 1.0, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 3
+Mean validation score: 0.328 (std: 0.041)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.9, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+Model with rank: 4
+Mean validation score: 0.328 (std: 0.041)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 0.9, 'optimizer': 'Welch', 'corr': 'absolute_exponential'}
+
+Model with rank: 5
+Mean validation score: 0.319 (std: 0.050)
+Parameters: {'normalize': True, 'regr': 'constant', 'theta0': 2.0, 'optimizer': 'fmin_cobyla', 'corr': 'absolute_exponential'}
+
+
+
+
