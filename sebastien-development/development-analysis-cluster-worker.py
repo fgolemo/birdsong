@@ -15,10 +15,10 @@ import pymir.SpectralFlux
 """
 
 if __name__ == "__main__":
-    inDir = "/argile/golemo/birddata-syllables/"
-    outDir = "/argile/golemo/birddata-syllables-csv/"
-    # inDir = "./audio-samples/"
-    # outDir = "./audio-samples/"
+    # inDir = "/argile/golemo/birddata-syllables/"
+    # outDir = "/argile/golemo/birddata-syllables-csv2/"
+    inDir = "./audio-samples/"
+    outDir = "./audio-samples/"
     filename = sys.argv[1]
     filepath = inDir + filename
 
@@ -40,6 +40,8 @@ if __name__ == "__main__":
 
     # extract data from flac
     audioData = pymir.AudioFile.open(filepath)
+
+    duration = len(audioData)/audioData.sampleRate
 
     # calculate features (wiener entropy aka spectral flatness)
     spectrum = abs(fft(audioData))
@@ -84,6 +86,8 @@ if __name__ == "__main__":
         minute,
         sec,
         syllable,
+        duration,
+
         spectral_flatness,
 
         min(energy),

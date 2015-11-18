@@ -21,8 +21,8 @@ if __name__ == "__main__":
     with open(filePath) as infile, open(filePath+".leftOver") as outfile:
         for line in infile:
             if not os.path.isfile(line + ".csv"):
-                outfile.write(line+"\n")
+                outfile.write(line)
 
-    
+
 
 
