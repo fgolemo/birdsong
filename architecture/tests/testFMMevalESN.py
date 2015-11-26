@@ -1,13 +1,13 @@
-import os, sys, inspect
-from time import time
-
-from architecture.tests.testESN import ESN
-
+import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
 parentparentdir = os.path.dirname(parentdir)
 sys.path.insert(0, parentdir)
 sys.path.insert(0, parentparentdir)
+from time import time
+
+from architecture.components.esn import ESN
 
 from numpy import genfromtxt
 import numpy as np
@@ -31,10 +31,10 @@ if __name__ == "__main__":
     inputs = genfromtxt(filehandleInputs, delimiter=',')
     outputs = genfromtxt(filehandleOutputs, delimiter=',')
 
-    print inputs.shape
-    print outputs.shape
-    print inputs[1,:]
-    print outputs[1,:]
+    # print inputs.shape
+    # print outputs.shape
+    # print inputs[1,:]
+    # print outputs[1,:]
 
     print "loaded data, now reshaping the data"
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                  generate_time_sequence=True,
                  reservoir_connectivity=10,
                  simulation_steps=10,
-                 echo_decay=0.8)
+                 echo_decay=0.5)
     esn.createNetwork()
 
     esn.train(inputsNew, outputsNew)
