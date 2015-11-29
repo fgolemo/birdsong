@@ -27,3 +27,5 @@ b1136means=birddata.1136[,c("day","hour","duration","spectralFlatness",
 
 pairs(b1136means[b1136means$day>=90,])
 
+table(b1136means$days[b1136means$day>=90])
+
