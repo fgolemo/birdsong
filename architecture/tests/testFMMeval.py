@@ -31,10 +31,22 @@ if __name__ == "__main__":
 
     print inputs.shape
     print outputs.shape
+    print inputs[1,:]
+    print outputs[1,:]
 
     print "loaded data, now training the model"
     gp = gaussian_process.GaussianProcess(theta0=1000000)
     print "created model, now fitting"
+
+    quit()
+    from sknn.mlp import Classifier, Layer
+
+    nn = Classifier(
+        layers=[
+            Layer("Rectifier", units=100),
+            Layer("Linear")],
+        learning_rate=0.02,
+        n_iter=10)
 
 
     # gp.fit(inputs, outputs)
@@ -91,9 +103,23 @@ if __name__ == "__main__":
         "optimizer": ['fmin_cobyla', 'Welch']
     }
 
+    param_dist_nn = {
+        "layers": [
+            [Layer("Rectifier", units=10),
+            Layer("Linear")],
+            [Layer("Rectifier", units=50),
+            Layer("Linear")],
+            [Layer("Rectifier", units=100),
+            Layer("Linear")]
+        ],
+        "learning_rate": [0.01,0.02,0.04],
+        "n_iter": [5,10,20]
+    }
+
     # run randomized search
     n_iter_search = 14
-    random_search = RandomizedSearchCV(gp, param_distributions=param_dist, n_iter=n_iter_search, error_score=-1000, verbose=3)
+    random_search = RandomizedSearchCV(nn, param_distributions=param_dist_nn, n_iter=n_iter_search, error_score=-1000,
+                                       verbose=3)
 
     start = time()
     random_search.fit(inputs, outputs)

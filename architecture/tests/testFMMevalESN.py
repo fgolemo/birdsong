@@ -1,14 +1,14 @@
-import os,sys,inspect
+import os, sys, inspect
+
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
+sys.path.insert(0, parentdir)
 parentparentdir = os.path.dirname(parentdir)
 sys.path.insert(0, parentdir)
 sys.path.insert(0, parentparentdir)
 from time import time
 
 from architecture.components.esn import ESN
-
 from numpy import genfromtxt
 import numpy as np
 from sklearn.gaussian_process import gaussian_process
@@ -42,16 +42,16 @@ if __name__ == "__main__":
     outputsNew = []
     lineIn = []
     lineOut = []
-    for i_in in range(len(inputs[:,1])):
+    for i_in in range(len(inputs[:, 1])):
         # print inputs[i_in,:]
-        if inputs[i_in,0] == 0:
+        if inputs[i_in, 0] == 0:
             if len(lineIn) > 0 and len(lineOut) > 1:
                 inputsNew.append(lineIn)
                 outputsNew.append(lineOut)
-            lineIn = inputs[i_in,1:]
-            lineOut = [outputs[i_in,:]]
+            lineIn = inputs[i_in, 1:]
+            lineOut = [outputs[i_in, :]]
             continue
-        lineOut.append(outputs[i_in,:])
+        lineOut.append(outputs[i_in, :])
 
     # print len(inputsNew)
     # print len(outputsNew)
@@ -66,26 +66,34 @@ if __name__ == "__main__":
 
     print "done reshaping the data, now training ESN"
 
-    esn = ESN(reservoir_size=100,
-                 inputs=11,
-                 outputs=3,
-                 generate_time_sequence=True,
-                 reservoir_connectivity=10,
-                 simulation_steps=10,
-                 echo_decay=0.5)
+    esn = ESN(reservoir_size=200,
+              inputs=11,
+              outputs=3,
+              generate_time_sequence=True,
+              input_connectivity=5,
+              reservoir_connectivity=10,
+              feedback_connectivity=0,
+              simulation_steps=3,
+              echo_decay=1,
+              reset_each_step=False,
+              disconnect_inputs=False)
     esn.createNetwork()
 
     esn.train(inputsNew, outputsNew)
 
     print "done training, now predicting"
 
-    prediction =  esn.predict(inputsNew[:10], steps=11)
-    print len(prediction)
-    print prediction.shape
-    print prediction
+    errors = []
 
-    predErr = prediction - outputsNew[:10]
-    print predErr
+    for i in range(10):
+        output = np.vstack(outputsNew[i])
+        pred = esn.predict([inputsNew[i]],steps=output.shape[0])
+        predErr = pred-output
+        err = np.square(predErr).sum()
+        # print "squared error:",err
+        errors.append(err)
 
+    print "total error:",round(sum(errors)/100000,2)
 
+    print "avg activation",esn.getAvgResActivation()
 

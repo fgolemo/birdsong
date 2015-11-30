@@ -11,19 +11,27 @@ class ESN:
                  outputs=1,
                  generate_time_sequence=False,
                  input_to_output=True,
+                 input_connectivity=10,
                  reservoir_connectivity=10,
+                 feedback_connectivity=0,
                  simulation_steps=10,
                  echo_decay=0.8,
-                 verbose=True):
+                 verbose=True,
+                 disconnect_inputs=False,
+                 reset_each_step=False):
         self.reservoir_size = reservoir_size
         self.inputs = inputs
         self.outputs = outputs
         self.generate_time_sequence = generate_time_sequence
         self.input_to_output = input_to_output
+        self.input_connectivity = input_connectivity
         self.reservoir_connectivity = reservoir_connectivity
         self.echo_decay = echo_decay
         self.simulation_steps = simulation_steps
         self.verbose = verbose
+        self.disconnect_inputs = disconnect_inputs
+        self.reset_each_step = reset_each_step
+        self.feedback_connectivity = feedback_connectivity
 
     def createNetwork(self):
         if self.verbose:
@@ -45,9 +53,18 @@ class ESN:
         for row in range(self.inputs):
             columns = np.arange(self.reservoir_size)
             np.random.shuffle(columns)
-            randomColumns = columns[:self.reservoir_connectivity]
+            randomColumns = columns[:self.input_connectivity]
             for col in randomColumns:
                 self.W_inputs[row, col] = np.random.rand()
+
+        if self.feedback_connectivity > 0:
+            self.W_feedback = np.zeros((self.outputs, self.reservoir_size))
+            for row in range(self.outputs):
+                columns = np.arange(self.reservoir_size)
+                np.random.shuffle(columns)
+                randomColumns = columns[:self.feedback_connectivity]
+                for col in randomColumns:
+                    self.W_feedback[row, col] = np.random.rand()
 
         # self.W_out = lil_matrix(self.outputs, self.reservoir_size+self.inputs)
         self.W_out = np.zeros((self.outputs, self.reservoir_size))
@@ -55,26 +72,46 @@ class ESN:
         if self.verbose:
             print("INFO: done allocating memory for network")
 
+    def _clearInputs(self):
+        self.N_input = np.zeros(self.inputs)
+
     def simulateStep(self):
         N_reservoir_tmp = self.N_reservoir
         N_output_tmp = self.N_output
 
+        if self.reset_each_step:
+            N_reservoir_tmp = np.zeros(self.N_reservoir.shape)
+            N_output_tmp = np.zeros(self.N_output.shape)
+
+        N_reservoir_tmp_feedback = N_reservoir_tmp
+
         for i_res in range(self.reservoir_size):
             val_inputs = np.dot(self.N_input.T, self.W_inputs[:, i_res])
             val_res = np.dot(self.N_reservoir.T, self.W_reservoir[:, i_res])
+            N_reservoir_tmp_feedback[i_res] = val_inputs + val_res
             new_val = self.activation(val_inputs + val_res, self.N_reservoir[i_res])
             N_reservoir_tmp[i_res] = new_val
 
-        self.N_reservoir = N_reservoir_tmp
-
         for i_out in range(self.outputs):
-            val_res = np.dot(self.N_reservoir, self.W_out[i_out, :])
+            val_res = np.dot(N_reservoir_tmp, self.W_out[i_out, :])
             N_output_tmp[i_out] = val_res
 
         self.N_output = N_output_tmp
 
+        if self.feedback_connectivity > 0:
+            for i_res in range(self.reservoir_size):
+                val_outputs = np.dot(self.N_output.T, self.W_feedback[:, i_res])
+                new_val = self.activation(N_reservoir_tmp_feedback[i_res] + val_outputs, N_reservoir_tmp[i_res])
+                N_reservoir_tmp[i_res] = new_val
+
+        self.N_reservoir = N_reservoir_tmp
+
+        if self.disconnect_inputs:
+            self._clearInputs()
+
     def activation(self, newInput, oldAct):
-        return expit(self.echo_decay * oldAct + newInput)
+        return expit(self.echo_decay * oldAct + newInput)  # sigmoid
+        # return np.tanh(self.echo_decay * oldAct + newInput)
 
     def _getTotalOutputLength(self, output):
         totalCount = 0
@@ -86,7 +123,9 @@ class ESN:
     def _progress(self, current, total):
         if self.verbose:
             percentDone = float(current) / total * 100
-            print("INFO: simulation {:.2f}% done".format(percentDone), end='\r')
+            tens = int(round(percentDone*2 / 10))
+            print("INFO: simulation {:.2f}% done".format(percentDone) + " [" + "#" * tens + " " * (20 - tens) + "]",
+                  end='\r')
 
     def train(self, inputs, outputs):
         totalOutputLen = len(inputs)
@@ -127,8 +166,8 @@ class ESN:
     def predict(self, inputs, steps=1):
         states = np.empty((len(inputs) * steps, self.outputs))
 
-        if self.verbose:
-            print("INFO: starting prediction")
+        # if self.verbose:
+        #     print("INFO: starting prediction")
 
         for i_in in range(len(inputs)):
             self.N_input = np.array(inputs[i_in])
@@ -143,6 +182,9 @@ class ESN:
                 states[i_in] = self.N_output
 
         return states
+
+    def getAvgResActivation(self):
+        return sum(self.N_reservoir) / self.reservoir_size
 
 
 if __name__ == "__main__":
