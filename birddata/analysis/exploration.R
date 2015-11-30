@@ -1,0 +1,31 @@
+
+birddata.1136 <- read.csv("D:/birddata/birddata-1136.csv", header=FALSE, na.strings="NaN")
+
+colnames(birddata.1136) = c("bird", "day", "hour", "minute", "second","syllable", 
+                            "duration", "spectralFlatness", "energyMin", "energyMax", "energyMean", 
+                            "amplitudeMin", "amplitudeMax", "amplitudeMean", "zeroCrossingRateMin", 
+                            "zeroCrossingRateMax", "zeroCrossingRateMean", "spectralCentroidMin", "spectralCentroidMax", 
+                            "spectralCentroidMean", "spectralCrestFactorMin", "spectralCrestFactorMax", 
+                            "spectralCrestFactorMean", "spectralKurtosisMin", "spectralKurtosisMax", 
+                            "spectralKurtosisMean", "spectralMeanMin", "spectralMeanMax", 
+                            "spectralMeanMean", "spectralRolloffMin", "spectralRolloffMax", 
+                            "spectralRolloffMean", "spectralSkewnessMin", "spectralSkewnessMax", 
+                            "spectralSkewnessMean", "spectralSpreadMin", "spectralSpreadMax", 
+                            "spectralSpreadMean", "spectralVarianceMin", "spectralVarianceMax", 
+                            "spectralVarianceMean", "spectralFluxMin", "spectralFluxMax", "spectralFluxMean")
+
+hist(birddata.1136$day[birddata.1136$day<=100], breaks = 30)
+# lines(density(birddata.1136$day[birddata.1136$day<=100]))
+
+b1136 = birddata.1136[birddata.1136$day<=100,]
+
+b1136means=birddata.1136[,c("day","hour","duration","spectralFlatness",
+                            "amplitudeMean", "zeroCrossingRateMean", "spectralCentroidMean",
+                            "spectralCrestFactorMean", "spectralKurtosisMean", "spectralMeanMean", 
+                            "spectralRolloffMean", "spectralSkewnessMean", "spectralSpreadMean", 
+                            "spectralVarianceMean", "spectralFluxMean")]
+
+pairs(b1136means[b1136means$day>=90,])
+
+table(b1136means$days[b1136means$day>=90])
+

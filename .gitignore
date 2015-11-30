@@ -8,3 +8,5 @@ sebastian-analysis/logs/*
 *.csv
 *.pyc
 *.pool
+**/.RData
+
